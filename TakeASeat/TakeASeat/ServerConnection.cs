@@ -29,12 +29,23 @@ namespace TakeASeat
             request.RequestUri = new Uri(_URI + nameshortcutUri + "&" + nameUri + "&" + surnameUri);
             request.Method = HttpMethod.Get;
             request.Headers.Add("Accept", "application/json");
+            var requestResults = await sendRequest(request);
+            Console.WriteLine("JsonColleagues: " + requestResults);
+            return await Task.FromResult(true);
+
+        }
+
+        //TODO Read Methods for 3 tables
+        //TODO Create another method for placesoccuppation
+
+        public async Task<string> sendRequest(HttpRequestMessage request)
+        {
+
             var client = new HttpClient();
             HttpResponseMessage response = await client.SendAsync(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 Console.WriteLine("Successfully");
-                return await Task.FromResult(false);
             }
             else
             {
@@ -43,9 +54,8 @@ namespace TakeASeat
             }
             HttpContent content = response.Content;
             var json = await content.ReadAsStringAsync();
-            Console.WriteLine("Json: " + json);
-            return await Task.FromResult(true);
-
+            
+            return await Task<string>.FromResult(json);
         }
 
 
