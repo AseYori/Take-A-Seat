@@ -12,30 +12,58 @@ namespace TakeASeat
 	{
 
         private ServerConnection server;
+        private List<string> _locations = new List<string>();
+        public List<string> Locations
+        {
+            get { return _locations; }
 
+            set
+            {
+                _locations = value;
 
+                OnPropertyChanged(nameof(Locations));
+            }
+        }
 
+       
+
+        private BuildingLevel buildingLvl;
 
         public MainPage()
 		{
+            
+            
             server = new ServerConnection();
-            server.IsConnecting = false;
             BindingContext = server;
-			InitializeComponent();
+            server.IsConnecting = false;
+            
+            InitializeComponent();
 
-		}
+            Locations.Add("WBN");
+            Locations.Add("DUS");
+            Locations.Add("DT");
+            locationPicker.BindingContext = this;
+
+
+
+        }
 
         private async void RegisterButton_Clicked(object sender, EventArgs e)
         {
 
-            //Console.WriteLine("nameshortcut: " + nameshortcut.Text);
-            //Console.WriteLine("name: " + name.Text);
-            //Console.WriteLine("surname: " + surname.Text);
             server.IsConnecting = true;
-            //await Task.Delay(5000);
-            await server.SendColleagueRequest(nameshortcut.Text, name.Text, surname.Text);
+
+            //await server.SendColleagueRequest(nameshortcut.Text, name.Text, surname.Text);
+            //string places = await server.readPlacesRequest();
+            string colleagues = await server.readColleaguesRequest();
+            //string placeoccupation = await server.readPlaceOccupationsRequest();
             server.IsConnecting = false;
-            //await Navigation.PushAsync(new BuildingLevel(server.loadLevelsFromServer()));
+
+            if(buildingLvl == null)
+            {
+                buildingLvl = new BuildingLevel(server.loadLevelsFromServer());
+            }
+            await Navigation.PushAsync(buildingLvl);
         }
 
         private void SearchingButton_Clicked(object sender, EventArgs e)
@@ -43,6 +71,9 @@ namespace TakeASeat
             Navigation.PushAsync(new SearchingColleagues(server.loadPlacesOfColleaguesFromServer()));
         }
 
-       
+        private void Picker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Psender-> " + (sender as Picker).Items[(sender as Picker).SelectedIndex]);
+        }
     }
 }

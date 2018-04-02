@@ -9,14 +9,35 @@ namespace TakeASeat
 {
     class ServerConnection : INotifyPropertyChanged
     {
-        private const string _URI = "http://192.168.178.127/colleagues/create.php?";
+        private const string _URI = "http://192.168.178.127/";
+        // create url
+        private const string _COLLEAGUE_CREATE = "colleagues/create.php?";
+        private const string _PLACEOCCUPATION_CREATE = "placeoccupation/create.php?";
 
+        // read url
+        private const string _COLLEAGUE_READ = "colleagues/read.php";
+        private const string _PLACES_READ = "places/read.php";
+        private const string _PLACESOCCUPATION_READ = "placeoccupation/read.php";
+
+
+        private bool _isConnecting;
+        public bool IsConnecting
+        {
+            get
+            {
+                return _isConnecting;
+            }
+
+            set
+            {
+                _isConnecting = value;
+
+                OnPropertyChanged(nameof(IsConnecting));
+            }
+        }
 
         public ServerConnection()
-        {
-
-            var uri = "http://192.168.178.127/database/phpliteadmin.php";
-        }
+        {}
 
 
         public async Task<bool> SendColleagueRequest(string nameshortcut, string name, string surname)
@@ -26,16 +47,47 @@ namespace TakeASeat
             var nameshortcutUri = "nameshortcut=" + nameshortcut;
             var nameUri = "name=" + name;
             var surnameUri = "surname=" + surname;
-            request.RequestUri = new Uri(_URI + nameshortcutUri + "&" + nameUri + "&" + surnameUri);
+            request.RequestUri = new Uri(_URI + _COLLEAGUE_CREATE + nameshortcutUri + "&" + nameUri + "&" + surnameUri);
             request.Method = HttpMethod.Get;
             request.Headers.Add("Accept", "application/json");
             var requestResults = await sendRequest(request);
-            Console.WriteLine("JsonColleagues: " + requestResults);
             return await Task.FromResult(true);
 
         }
 
         //TODO Read Methods for 3 tables
+
+        public async Task<String> readPlacesRequest()
+        {
+            var request = new HttpRequestMessage();
+            request.RequestUri = new Uri(_URI + _PLACES_READ);
+            request.Method = HttpMethod.Get;
+            request.Headers.Add("Accept", "application/json");
+            var requestResults = await sendRequest(request);
+            return await Task.FromResult<string>(requestResults);
+        }
+
+        public async Task<String> readColleaguesRequest()
+        {
+            var request = new HttpRequestMessage();
+            request.RequestUri = new Uri(_URI + _COLLEAGUE_READ);
+            request.Method = HttpMethod.Get;
+            request.Headers.Add("Accept", "application/json");
+            var requestResults = await sendRequest(request);
+            return await Task.FromResult<string>(requestResults);
+        }
+
+        public async Task<String> readPlaceOccupationsRequest()
+        {
+            var request = new HttpRequestMessage();
+            request.RequestUri = new Uri(_URI + _PLACESOCCUPATION_READ);
+            request.Method = HttpMethod.Get;
+            request.Headers.Add("Accept", "application/json");
+            var requestResults = await sendRequest(request);
+            return await Task.FromResult<string>(requestResults);
+        }
+
+
         //TODO Create another method for placesoccuppation
 
         public async Task<string> sendRequest(HttpRequestMessage request)
@@ -59,18 +111,7 @@ namespace TakeASeat
         }
 
 
-        private bool _isConnecting;
-        public bool IsConnecting {
-            get {
-                return _isConnecting;
-            }
 
-            set {
-                _isConnecting = value;
-
-                OnPropertyChanged(nameof(IsConnecting));
-            }
-        }
 
         private String _serverName;
         public String ServerName {
