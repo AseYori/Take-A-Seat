@@ -16,9 +16,10 @@ namespace TakeASeat
 
         // read url
         private const string _COLLEAGUE_READ = "colleagues/read.php";
-        private const string _PLACES_READ = "places/read.php";
+        private const string _PLACES_READ = "places/readAll.php";
         private const string _PLACESOCCUPATION_READ = "placeoccupation/read.php";
-
+        private const string _LOCATIONS_READ = "locations/read.php";
+        private const string _PLACES_AVAILABLE_READ = "places/readAvailable.php";
 
         private bool _isConnecting;
         public bool IsConnecting
