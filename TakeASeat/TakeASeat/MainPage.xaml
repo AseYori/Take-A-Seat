@@ -38,7 +38,7 @@
                 x:Name="nameshortcut"
                 Placeholder="Name shortcut"/>
 
-            <Picker x:Name="locationPicker" Title="Pick your location" ItemsSource="{Binding Locations}" SelectedIndexChanged="Picker_SelectedIndexChanged"/>
+            <Picker x:Name="locationPicker" Title="Pick your location" ItemsSource="{Binding LocationsList}" SelectedIndexChanged="Picker_SelectedIndexChanged"/>
 
             <Button
                 Text="Register"

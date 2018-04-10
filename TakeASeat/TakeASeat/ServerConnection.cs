@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,10 +69,20 @@ namespace TakeASeat
             var requestResults = await sendRequest(request);
             return await Task.FromResult<string>(requestResults);
         }
+        public async Task<String> readLocationsRequest()
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            request.RequestUri = new Uri(_URI + _LOCATIONS_READ);
+            request.Method = HttpMethod.Get;
+            request.Headers.Add("Accept", "application/json");
+            var requestResults = await sendRequest(request);
+            return await Task.FromResult<string>(requestResults);
+        }
+
 
         public async Task<String> readColleaguesRequest()
         {
-            var request = new HttpRequestMessage();
+            HttpRequestMessage request = new HttpRequestMessage();
             request.RequestUri = new Uri(_URI + _COLLEAGUE_READ);
             request.Method = HttpMethod.Get;
             request.Headers.Add("Accept", "application/json");
@@ -107,7 +119,6 @@ namespace TakeASeat
             }
             HttpContent content = response.Content;
             var json = await content.ReadAsStringAsync();
-            
             return await Task<string>.FromResult(json);
         }
 

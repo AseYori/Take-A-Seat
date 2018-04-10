@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,16 +15,16 @@ namespace TakeASeat
 	{
 
         private ServerConnection server;
-        private List<string> _locations = new List<string>();
-        public List<string> Locations
+        private ObservableCollection<string> _locationsList;// = new List<string>();
+        public ObservableCollection<string> LocationsList
         {
-            get { return _locations; }
+            get { return _locationsList; }
 
             set
             {
-                _locations = value;
+                _locationsList = value;
 
-                OnPropertyChanged(nameof(Locations));
+                OnPropertyChanged(nameof(LocationsList));
             }
         }
 
@@ -31,21 +34,31 @@ namespace TakeASeat
 
         public MainPage()
 		{
-            
-            
+
+            LocationsList = new ObservableCollection<string>();
             server = new ServerConnection();
             BindingContext = server;
             server.IsConnecting = false;
-            
+
             InitializeComponent();
 
-            Locations.Add("WBN");
-            Locations.Add("DUS");
-            Locations.Add("DT");
             locationPicker.BindingContext = this;
+            Setup_Locations();
+        }
 
 
+        private async void Setup_Locations()
+        {
+            string locationsRequest = await server.readLocationsRequest();
 
+            List<Locations> liste = new List<Locations>();
+            liste = JsonConvert.DeserializeAnonymousType<List<Locations>>(locationsRequest, liste);
+
+
+            for (int i = 0; i < liste.Count; i++)
+            {
+                LocationsList.Add(liste[i].Location);
+            }
         }
 
         private async void RegisterButton_Clicked(object sender, EventArgs e)
@@ -55,8 +68,32 @@ namespace TakeASeat
 
             //await server.SendColleagueRequest(nameshortcut.Text, name.Text, surname.Text);
             //string places = await server.readPlacesRequest();
-            string colleagues = await server.readColleaguesRequest();
+
+            //string loc = await server.readLocationsRequest();
+            //Console.WriteLine("Loc: " + loc);
+
+            //var enigwas = JsonConvert.DeserializeObject<List<string>>(loc);
+            //Console.WriteLine("Enigwas: " + enigwas);
+
+            //string colleagues = await server.readColleaguesRequest();
+            //Console.WriteLine("ColleagueJSON: " + colleagues);
+
+            //List<Colleagues> colleague = new List<Colleagues>();
+            //colleague = JsonConvert.DeserializeAnonymousType<List<Colleagues>>(colleagues, colleague);
+            //Console.WriteLine("JSON: " + colleague);
+
+
+            //for (int i = 0; i < colleague.Count; i++)
+            //{
+            //    System.Diagnostics.Debug.WriteLine(colleague[i].Name);
+            //}
+
+
+
+
+
             //string placeoccupation = await server.readPlaceOccupationsRequest();
+
             server.IsConnecting = false;
 
             if(buildingLvl == null)
